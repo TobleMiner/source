@@ -22,17 +22,14 @@
 #include "machtypes.h"
 
 
-#define UNIFIAC_KEYS_POLL_INTERVAL	20
-#define UNIFIAC_KEYS_DEBOUNCE_INTERVAL	(3 * UNIFIAC_KEYS_POLL_INTERVAL)
+#define NANOSTATIONAC_KEYS_POLL_INTERVAL	20
+#define NANOSTATIONAC_KEYS_DEBOUNCE_INTERVAL	(3 * NANOSTATIONAC_KEYS_POLL_INTERVAL)
 
-#define UNIFIAC_GPIO_LED_WHITE		7
-#define UNIFIAC_GPIO_LED_BLUE		8
+#define NANOSTATIONAC_GPIO_BTN_RESET	12
 
-#define UNIFIAC_GPIO_BTN_RESET		2
-
-#define UNIFIAC_MAC0_OFFSET             0x0000
-#define UNIFIAC_WMAC_CALDATA_OFFSET     0x1000
-#define UNIFIAC_PCI_CALDATA_OFFSET      0x5000
+#define NANOSTATIONAC_ETH0_MAC_OFFSET         0x0000
+#define NANOSTATIONAC_WMAC_CALDATA_OFFSET     0x1000
+#define NANOSTATIONAC_PCI_CALDATA_OFFSET      0x5000
 
 
 static struct flash_platform_data ubnt_nanostationac_flash_data = {
@@ -40,26 +37,19 @@ static struct flash_platform_data ubnt_nanostationac_flash_data = {
 	.type = "mx25l12805d",
 };
 
-/*
-static struct at803x_platform_data dr34x_at803x_data = {
-	.disable_smarteee = 1,
-	.enable_rgmii_rx_delay = 1,
-	.enable_rgmii_tx_delay = 1,
-};
-
-static struct mdio_board_info dr34x_mdio0_info[] = {
+static struct gpio_keys_button ubnt_nanostationac_gpio_keys[] __initdata = {
 	{
-		.bus_id = "ag71xx-mdio.0",
-		.phy_addr = 0,
-		.platform_data = &dr34x_at803x_data,
-	},
+		.desc			= "reset",
+		.type			= EV_KEY,
+		.code			= KEY_RESTART,
+		.debounce_interval	= NANOSTATIONAC_KEYS_DEBOUNCE_INTERVAL,
+		.gpio			= NANOSTATIONAC_GPIO_BTN_RESET,
+		.active_low		= 1,
+	}
 };
-*/
 
 static void __init ubnt_nanostationac_setup(void)
 {
-	unsigned char mac[6] = {0x42, 0x42, 0x42, 0x42, 0x42, 0x42};
-
 	// Address might be wrong?
 	u8 *eeprom = (u8 *) KSEG1ADDR(0x1fff0000);
 
@@ -68,7 +58,6 @@ static void __init ubnt_nanostationac_setup(void)
 	// Register mdio interface
 	printk(KERN_INFO "Registering mdio interface\n");
 
-//	mdiobus_register_board_info(dr34x_mdio0_info, ARRAY_SIZE(dr34x_mdio0_info));
 	ath79_register_mdio(0, 0x0);
 
 	printk(KERN_INFO "Initializing ar8035 phy\n");
@@ -83,37 +72,28 @@ static void __init ubnt_nanostationac_setup(void)
 
 
 	// This could be totally wrong
-	//ath79_init_mac(ath79_eth0_data.mac_addr, eeprom + UNIFIAC_MAC0_OFFSET, 0);
+	ath79_init_mac(ath79_eth0_data.mac_addr, eeprom + NANOSTATIONAC_ETH0_MAC_OFFSET, 0);
 
 	// For now, use a static mac
-	ath79_init_mac(ath79_eth0_data.mac_addr, mac, 0);
+	//ath79_init_mac(ath79_eth0_data.mac_addr, mac, 0);
 
 
 	ath79_register_eth(0);
 
-/*
-	ath79_eth0_data.phy_mask = BIT(4);
-	ath79_eth0_pll_data.pll_10 = 0x00001313;
+
+	ath79_register_wmac(eeprom + NANOSTATIONAC_WMAC_CALDATA_OFFSET, NULL);
 
 
-	// Probably not right
-	ath79_register_mdio(0, ~BIT(4));
-*/
+	ap91_pci_init(eeprom + NANOSTATIONAC_PCI_CALDATA_OFFSET, NULL);
 
-	ath79_register_wmac(eeprom + UNIFIAC_WMAC_CALDATA_OFFSET, NULL);
-
-
-	ap91_pci_init(eeprom + UNIFIAC_PCI_CALDATA_OFFSET, NULL);
+	// Try NULL (I have no idea about caldata offsets yet)
+	//ap91_pci_init(NULL, wireless_mac);
 
 
-/*
-	ath79_register_leds_gpio(-1, ARRAY_SIZE(ubnt_unifiac_leds_gpio),
-	                         ubnt_unifiac_leds_gpio);
+	ath79_register_gpio_keys_polled(-1, NANOSTATIONAC_KEYS_POLL_INTERVAL,
+	                                ARRAY_SIZE(ubnt_nanostationac_gpio_keys),
+	                                ubnt_nanostationac_gpio_keys);
 
-	ath79_register_gpio_keys_polled(-1, UNIFIAC_KEYS_POLL_INTERVAL,
-	                                ARRAY_SIZE(ubnt_unifiac_gpio_keys),
-	                                ubnt_unifiac_gpio_keys);
-*/
 }
 
 MIPS_MACHINE(ATH79_MACH_UBNT_NANOSTATIONAC, "UBNT-NANOSTATION-AC",
