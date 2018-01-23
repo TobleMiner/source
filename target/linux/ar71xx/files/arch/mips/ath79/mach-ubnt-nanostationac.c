@@ -21,6 +21,20 @@
 #include "dev-usb.h"
 #include "machtypes.h"
 
+
+#define UNIFIAC_KEYS_POLL_INTERVAL	20
+#define UNIFIAC_KEYS_DEBOUNCE_INTERVAL	(3 * UNIFIAC_KEYS_POLL_INTERVAL)
+
+#define UNIFIAC_GPIO_LED_WHITE		7
+#define UNIFIAC_GPIO_LED_BLUE		8
+
+#define UNIFIAC_GPIO_BTN_RESET		2
+
+#define UNIFIAC_MAC0_OFFSET             0x0000
+#define UNIFIAC_WMAC_CALDATA_OFFSET     0x1000
+#define UNIFIAC_PCI_CALDATA_OFFSET      0x5000
+
+
 static struct flash_platform_data ubnt_nanostationac_flash_data = {
 	/* mx25l12805d and mx25l12835f have the same JEDEC ID */
 	.type = "mx25l12805d",
