@@ -142,6 +142,20 @@ define Device/ubnt-unifiac-pro
 endef
 TARGET_DEVICES += ubnt-unifiac-pro
 
+define Device/ubnt-nanostationac
+  DEVICE_TITLE := Nanostation AC
+  DEVICE_PACKAGES += kmod-ath10k ath10k-firmware-qca988x
+  DEVICE_PROFILE := UBNTNANOSTATIONAC
+  BOARDNAME := UBNT-NANOSTATION-AC
+  UBNT_CHIP := ar934x
+  IMAGE_SIZE := 15744k
+  MTDPARTS := spi0.0:256k(u-boot)ro,64k(u-boot-env)ro,15744k(firmware),256k(cfg)ro,64k(EEPROM)ro
+  IMAGES := factory.bin sysupgrade.bin
+  IMAGE/sysupgrade.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | check-size $$$$(IMAGE_SIZE)
+  IMAGE/factory.bin := $$(IMAGE/sysupgrade.bin) | mkubntimage-split
+endef
+TARGET_DEVICES += ubnt-nanostationac
+
 define Device/ubnt-unifi-outdoor
   $(Device/ubnt-bz)
   DEVICE_TITLE := Ubiquiti UniFi Outdoor
