@@ -143,7 +143,7 @@ endef
 TARGET_DEVICES += ubnt-unifiac-pro
 
 define Device/ubnt-nanostationac
-  DEVICE_TITLE := Nanostation AC
+  DEVICE_TITLE := Ubiquiti Nanostation AC
   DEVICE_PACKAGES += kmod-ath10k ath10k-firmware-qca988x
   DEVICE_PROFILE := UBNTNANOSTATIONAC
   BOARDNAME := UBNT-NANOSTATION-AC
