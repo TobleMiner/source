@@ -1259,7 +1259,7 @@ ar71xx_board_detect() {
 	*"UniFi-AC-LITE/MESH")
 		name="unifiac-lite"
 		;;
-	*"Nanostation-AC")
+	*"Ubiquiti Nanostation AC")
 		name="nanostationac"
 		;;
 	*"UniFi-AC-PRO")
