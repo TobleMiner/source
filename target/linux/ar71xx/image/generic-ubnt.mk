@@ -148,6 +148,7 @@ define Device/ubnt-nanostationac
   DEVICE_PROFILE := UBNTNANOSTATIONAC
   BOARDNAME := UBNT-NANOSTATION-AC
   UBNT_CHIP := ar934x
+  UBNT_TYPE := WA
   IMAGE_SIZE := 15744k
   MTDPARTS := spi0.0:256k(u-boot)ro,64k(u-boot-env)ro,15744k(firmware),256k(cfg)ro,64k(EEPROM)ro
   IMAGES := factory.bin sysupgrade.bin

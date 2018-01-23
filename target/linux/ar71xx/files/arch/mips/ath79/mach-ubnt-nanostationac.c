@@ -40,28 +40,55 @@ static struct flash_platform_data ubnt_nanostationac_flash_data = {
 	.type = "mx25l12805d",
 };
 
+/*
+static struct at803x_platform_data dr34x_at803x_data = {
+	.disable_smarteee = 1,
+	.enable_rgmii_rx_delay = 1,
+	.enable_rgmii_tx_delay = 1,
+};
+
+static struct mdio_board_info dr34x_mdio0_info[] = {
+	{
+		.bus_id = "ag71xx-mdio.0",
+		.phy_addr = 0,
+		.platform_data = &dr34x_at803x_data,
+	},
+};
+*/
+
 static void __init ubnt_nanostationac_setup(void)
 {
+	unsigned char mac[6] = {0x42, 0x42, 0x42, 0x42, 0x42, 0x42};
+
 	// Address might be wrong?
 	u8 *eeprom = (u8 *) KSEG1ADDR(0x1fff0000);
 
 	ath79_register_m25p80(&ubnt_nanostationac_flash_data);
 
 	// Register mdio interface
+	printk(KERN_INFO "Registering mdio interface\n");
+
+//	mdiobus_register_board_info(dr34x_mdio0_info, ARRAY_SIZE(dr34x_mdio0_info));
 	ath79_register_mdio(0, 0x0);
 
-	ath79_setup_ar934x_eth_cfg(AR934X_ETH_CFG_RGMII_GMAC0 |
-				   AR934X_ETH_CFG_SW_ONLY_MODE);
-
-	// This could be totally wrong
-	ath79_init_mac(ath79_eth0_data.mac_addr,
-	               eeprom + UNIFIAC_MAC0_OFFSET, 0);
+	printk(KERN_INFO "Initializing ar8035 phy\n");
+	ath79_setup_ar934x_eth_cfg(AR934X_ETH_CFG_RGMII_GMAC0 | AR934X_ETH_CFG_SW_ONLY_MODE);
 
 	// Stolen from c55
-	ath79_eth0_data.phy_if_mode = PHY_INTERFACE_MODE_SGMII;
+	printk(KERN_INFO "Setting up eth0\n");
+	ath79_eth0_data.phy_if_mode = PHY_INTERFACE_MODE_RGMII;
 	ath79_eth0_data.mii_bus_dev = &ath79_mdio0_device.dev;
-	ath79_eth0_data.phy_mask = BIT(0);
+	ath79_eth0_data.phy_mask = BIT(4);
 	ath79_eth0_pll_data.pll_1000 = 0x06000000;
+
+
+	// This could be totally wrong
+	//ath79_init_mac(ath79_eth0_data.mac_addr, eeprom + UNIFIAC_MAC0_OFFSET, 0);
+
+	// For now, use a static mac
+	ath79_init_mac(ath79_eth0_data.mac_addr, mac, 0);
+
+
 	ath79_register_eth(0);
 
 /*
