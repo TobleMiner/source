@@ -151,10 +151,10 @@ TARGET_DEVICES += ubnt-unifiac-pro
 
 define Device/ubnt-nanostationac
   $(Device/ubnt-wa)
-  DEVICE_TITLE := Ubiquiti Nanostation AC
+  DEVICE_TITLE := Ubiquiti Nanostation AC loco
   DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
-  DEVICE_PROFILE += UBNTNANOSTATIONAC
-  BOARDNAME := UBNT-NANOSTATION-AC
+  DEVICE_PROFILE += UBNTNANOSTATIONACLOCO
+  BOARDNAME := UBNT-NANOSTATION-ACL
   IMAGE_SIZE := 15744k
   MTDPARTS := spi0.0:256k(u-boot)ro,64k(u-boot-env)ro,15744k(firmware),256k(cfg)ro,64k(EEPROM)ro
   IMAGES := factory.bin sysupgrade.bin
