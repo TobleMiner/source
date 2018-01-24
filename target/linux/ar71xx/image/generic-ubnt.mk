@@ -66,6 +66,13 @@ define Device/ubnt-bz
   UBNT_CHIP := ar7240
 endef
 
+define Device/ubnt-wa
+  $(Device/ubnt)
+  UBNT_TYPE := WA
+  UBNT_CHIP := ar934x
+  UBNT_BOARD := WA
+endef
+
 define Device/rw2458n
   $(Device/ubnt-xm)
   DEVICE_TITLE := Ubiquiti RW2458N
@@ -143,12 +150,11 @@ endef
 TARGET_DEVICES += ubnt-unifiac-pro
 
 define Device/ubnt-nanostationac
+  $(Device/ubnt-wa)
   DEVICE_TITLE := Ubiquiti Nanostation AC
-  DEVICE_PACKAGES += kmod-ath10k ath10k-firmware-qca988x
-  DEVICE_PROFILE := UBNTNANOSTATIONAC
+  DEVICE_PACKAGES := kmod-ath10k ath10k-firmware-qca988x
+  DEVICE_PROFILE += UBNTNANOSTATIONAC
   BOARDNAME := UBNT-NANOSTATION-AC
-  UBNT_CHIP := ar934x
-  UBNT_TYPE := WA
   IMAGE_SIZE := 15744k
   MTDPARTS := spi0.0:256k(u-boot)ro,64k(u-boot-env)ro,15744k(firmware),256k(cfg)ro,64k(EEPROM)ro
   IMAGES := factory.bin sysupgrade.bin
